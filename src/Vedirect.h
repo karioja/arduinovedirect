@@ -7,11 +7,6 @@
 #include "Particle.h"
 #endif
 
-#ifndef NUMBER_OF_SAMPLES
-#define NUMBER_OF_SAMPLES 60
-#endif
-
-
 #define MAX_INPUT 128
 
 #define STATE_WAIT_HEADER 0
@@ -27,20 +22,14 @@ typedef const __FlashStringHelper *VedirectFlashStringPtr;
 
 
 typedef struct {
-  int main_battery_voltage[NUMBER_OF_SAMPLES];
-  int average_main_battery_voltage;
-  int aux_battery_voltage[NUMBER_OF_SAMPLES];
-  int average_aux_battery_voltage;
-  int panel_voltage[NUMBER_OF_SAMPLES];
-  int average_panel_voltage;
-  int panel_power[NUMBER_OF_SAMPLES];
-  int average_panel_power;
+  int main_battery_voltage;
+  int aux_battery_voltage;
+  int panel_voltage;
+  int panel_power;
   int battery_mid_point_voltage;
   int battery_mid_point_deviation;
-  int battery_current[NUMBER_OF_SAMPLES];
-  int average_battery_current;
-  int load_current[NUMBER_OF_SAMPLES];
-  int average_load_current;
+  int battery_current;
+  int load_current;
   int battery_temperature;
   int state_of_charge;
   int time_to_go;
@@ -48,19 +37,19 @@ typedef struct {
   int alarm_condition_active;
   int relay_state;
   int state_of_operation;
-  int consumed_amp_hours;
-  int instantaneous_power[NUMBER_OF_SAMPLES];
+  long consumed_amp_hours;
+  int instantaneous_power;
   int average_power;
-  int deepest_discharge;
-  int last_discharge;
-  int average_discharge;
+  long deepest_discharge;
+  long last_discharge;
+  long average_discharge;
   int charge_cycles;
   int full_discharges;
-  int cumulative_amp_hours_drawn;
+  long cumulative_amp_hours_drawn;
   int minimum_battery_voltage;
   int maximum_battery_voltage;
-  int seconds_since_last_full_charge;
-  int automatic_syncronizations;
+  long seconds_since_last_full_charge;
+  int automatic_synchronizations;
   int low_voltage_alarms;
   int high_voltage_alarms;
   int discharged_energy;
@@ -74,6 +63,8 @@ typedef struct {
   char load_output_state[4];
   char error_code[4];
   char firmware_version[5];
+  int tracker_operation_mode;
+  int day_sequence_number;
 } VedirectData;
 
 class Vedirect
@@ -89,8 +80,6 @@ class Vedirect
   void processIncomingSerialByte(const int inByte);
   void collectData(char * key, char * value);
  private:
-  void updateAverage();
-  int calculateAverage(int *array);
   Stream *mySerial;
   char input_line [MAX_INPUT];
   char keybuffer[10];
